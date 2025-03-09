@@ -1,0 +1,38 @@
+{
+    "dev": {
+        "baseUrl": "https://dev.example.com",
+        "authToken": "dev-token-123",
+        "dbConfig": {
+            "host": "dev-db.example.com",
+            "username": "dev_user",
+            "password": "dev_pass"
+        }
+    },
+    "qa": {
+        "baseUrl": "https://qa.example.com",
+        "authToken": "qa-token-456",
+        "dbConfig": {
+            "host": "qa-db.example.com",
+            "username": "qa_user",
+            "password": "qa_pass"
+        }
+    },
+    "staging": {
+        "baseUrl": "https://staging.example.com",
+        "authToken": "staging-token-789",
+        "dbConfig": {
+            "host": "staging-db.example.com",
+            "username": "staging_user",
+            "password": "staging_pass"
+        }
+    },
+    "prod": {
+        "baseUrl": "https://api.example.com",
+        "authToken": "prod-token-999",
+        "dbConfig": {
+            "host": "prod-db.example.com",
+            "username": "prod_user",
+            "password": "prod_pass"
+        }
+    }
+}
