@@ -102,7 +102,7 @@ Feature: Fraud Detection Testing for Petstore API
 
   Scenario: Consume message from Kafka
     * def kafkaUtils = Java.type('kafka.KafkaUtils')
-    * def kafka = new kafkaUtils('localhost:9092', 'fraud-alerts')
+    * def kafka = new kafkaUtils('localhost:9092', 'test-topic')
     * def message = kafka.consumeMessage()
     * print 'Consumed message: ', message
     * match message == 'risk'

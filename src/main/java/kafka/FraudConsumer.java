@@ -7,17 +7,15 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import java.time.Duration;
 import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Properties;
 
-public class KafkaUtils {
+public class FraudConsumer {
     private final KafkaConsumer<String, String> consumer;
 
-    public KafkaUtils(String bootstrapServers, String topic) {
+    public FraudConsumer(String bootstrapServers, String topic) {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "karate-consumer-group");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "transaction-consumer-group");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -26,19 +24,22 @@ public class KafkaUtils {
         consumer.subscribe(Collections.singletonList(topic));
     }
 
-    public List<String> consumeMessages(int maxMessages) {
-        List<String> messages = new ArrayList<>();
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
-        for (ConsumerRecord<String, String> record : records) {
-            messages.add(record.value());
-            if (messages.size() >= maxMessages) {
-                break;
+    public void consumeTransactions() {
+        while (true) {
+            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+            for (ConsumerRecord<String, String> record : records) {
+                System.out.println("Consumed transaction: " + record.value());
+                // Perform transaction monitoring logic here
             }
         }
-        return messages;
     }
 
     public void close() {
         consumer.close();
+    }
+
+    public static void main(String[] args) {
+        FraudConsumer consumer = new FraudConsumer("localhost:9092", "transactions-topic");
+        consumer.consumeTransactions();
     }
 }
