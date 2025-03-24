@@ -19,7 +19,10 @@ jobs:
     - name: Set up Java
       uses: actions/setup-java@v2
       with:
+        distribution: 'adopt' # Specify the distribution, e.g., 'adopt', 'zulu', 'temurin'
         java-version: '11'
+        java-package: 'jdk'
+        architecture: 'x64'
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -37,22 +40,20 @@ jobs:
     runs-on: ubuntu-latest
     needs: setup_environment
     steps:
-    - name: Start Kafka Producer
+    - name: Start Kafka and Zookeeper
       run: |
-        # Start Kafka and Zookeeper
         sudo systemctl start kafka
         sudo systemctl start zookeeper
-        # Run Kafka producer script
-        python src/kafka_producer.py
+
+    - name: Run Kafka Producer
+      run: python src/kafka_producer.py
 
   kafka_consumer:
     runs-on: ubuntu-latest
     needs: setup_environment
     steps:
     - name: Start Kafka Consumer
-      run: |
-        # Run Kafka consumer script
-        python src/kafka_consumer.py
+      run: python src/kafka_consumer.py
 
   mongodb_setup:
     runs-on: ubuntu-latest
@@ -72,8 +73,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Run Karate API Tests
-      run: |
-        mvn test -Dkarate.options="classpath:features/api-tests.feature"
+      run: mvn test -Dkarate.options="classpath:features/api-tests.feature"
 
     - name: Upload Test Report
       uses: actions/upload-artifact@v4
