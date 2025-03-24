@@ -1,4 +1,4 @@
-name: API Testing Pipeline
+name: Java API Testing Pipeline
 
 on:
   push:
@@ -24,14 +24,8 @@ jobs:
         java-package: 'jdk'
         architecture: 'x64'
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-
     - name: Install Dependencies
       run: |
-        pip install -r requirements.txt
         sudo apt-get update
         sudo apt-get install -y mongodb
         sudo apt-get install -y kafka
@@ -46,14 +40,14 @@ jobs:
         sudo systemctl start zookeeper
 
     - name: Run Kafka Producer
-      run: python src/kafka_producer.py
+      run: java -cp target/myapp.jar com.example.kafka.KafkaProducerMain
 
   kafka_consumer:
     runs-on: ubuntu-latest
     needs: setup_environment
     steps:
     - name: Start Kafka Consumer
-      run: python src/kafka_consumer.py
+      run: java -cp target/myapp.jar com.example.kafka.KafkaConsumerMain
 
   mongodb_setup:
     runs-on: ubuntu-latest
@@ -63,7 +57,7 @@ jobs:
       run: sudo systemctl start mongodb
 
     - name: Initialize MongoDB Data
-      run: python src/mongodb_init.py
+      run: java -cp target/myapp.jar com.example.mongodb.MongoDBInitMain
 
   api_test:
     runs-on: ubuntu-latest
