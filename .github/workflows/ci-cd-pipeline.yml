@@ -19,7 +19,7 @@ jobs:
     - name: Set up Java
       uses: actions/setup-java@v2
       with:
-        distribution: 'adopt' # Specify the distribution, e.g., 'adopt', 'zulu', 'temurin'
+        distribution: 'adopt'
         java-version: '11'
         java-package: 'jdk'
         architecture: 'x64'
@@ -27,7 +27,11 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y mongodb
+        sudo apt-get install -y wget
+        wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+        echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+        sudo apt-get update
+        sudo apt-get install -y mongodb-org
         sudo apt-get install -y kafka
 
   kafka_producer:
