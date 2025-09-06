@@ -1,80 +1,11 @@
 name: Java API Testing Pipeline
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
-jobs:
-  setup_environment:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: Set up Java
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'adopt'
-        java-version: '11'
-        java-package: 'jdk'
-        architecture: 'x64'
-
-    - name: Install Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y wget
-        wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
-        echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
-        sudo apt-get update
-        sudo apt-get install -y mongodb-org
-        sudo apt-get install -y kafka
-
-  kafka_producer:
-    runs-on: ubuntu-latest
-    needs: setup_environment
-    steps:
-    - name: Start Kafka and Zookeeper
-      run: |
-        sudo systemctl start kafka
-        sudo systemctl start zookeeper
-
-    - name: Run Kafka Producer
-      run: java -cp target/myapp.jar com.example.kafka.KafkaProducerMain
-
-  kafka_consumer:
-    runs-on: ubuntu-latest
-    needs: setup_environment
-    steps:
-    - name: Start Kafka Consumer
-      run: java -cp target/myapp.jar com.example.kafka.KafkaConsumerMain
-
-  mongodb_setup:
-    runs-on: ubuntu-latest
-    needs: setup_environment
-    steps:
-    - name: Start MongoDB
-      run: sudo systemctl start mongodb
-
-    - name: Initialize MongoDB Data
-      run: java -cp target/myapp.jar com.example.mongodb.MongoDBInitMain
-
-  api_test:
-    runs-on: ubuntu-latest
-    needs: [kafka_producer, kafka_consumer, mongodb_setup]
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: Run Karate API Tests
-      run: mvn test -Dkarate.options="classpath:features/api-tests.feature"
-
-    - name: Upload Test Report
-      uses: actions/upload-artifact@v4
-      with:
-        name: karate-test-report
-        path: target/surefire-reports/karate-summary.json
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
