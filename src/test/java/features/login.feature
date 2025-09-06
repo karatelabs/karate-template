@@ -1,5 +1,5 @@
 Feature: Simple API Test with Karate
-  This feature demonstrates a basic Karate tes
+  This feature demonstrates a basic Karate test
 
   Background:
     * url 'https://jsonplaceholder.typicode.com'
