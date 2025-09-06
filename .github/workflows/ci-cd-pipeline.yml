@@ -16,3 +16,40 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+
+    - name: Get Changed Feature Files
+      id: changed-feature-files
+      uses: tj-actions/changed-files@v46.0.1
+      with:
+        files: '**.feature'
+        only_changed: true
+
+    - name: Check for Feature Files
+      id: check_feature_files
+      run: |
+        if [ "${{ steps.changed-feature-files.outputs.any_changed }}" != 'true' ]; then
+          echo "SKIP_TESTS=true" >> $GITHUB_ENV
+          echo "No feature files to test. Exiting."
+        else
+          echo "SKIP_TESTS=false" >> $GITHUB_ENV
+          echo "Changed feature files:"
+          for file in ${{ steps.changed-feature-files.outputs.all_changed_files }}; do
+            echo "$file"
+          done
+        fi
+
+    - name: Set up JDK 17
+      if: ${{ env.SKIP_TESTS == 'false' }}
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Run Karate Test
+      if: ${{ env.SKIP_TESTS == 'false' }}
+      id: run_karate_test
+      run: |
+        KARATE_OPTION="${{ steps.changed-feature-files.outputs.all_changed_files }} --tags ~@ignore"
+        mvn test -DargLine="-Xmx3g" -fae -Dmaven.test.failure.ignore=true -Dkarate.options="${KARATE_OPTION}"
+
+    
