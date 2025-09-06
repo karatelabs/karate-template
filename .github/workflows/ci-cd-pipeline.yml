@@ -60,7 +60,6 @@ jobs:
       with:
         script: |
           const fs = require('fs');
-          const core = require('@actions/core');
 
           const jsonString = fs.readFileSync('target/karate-reports/karate-summary-json.txt', 'utf8');
           const json = JSON.parse(jsonString);
