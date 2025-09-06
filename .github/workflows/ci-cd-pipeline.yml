@@ -66,7 +66,14 @@ jobs:
 
           const testStatus = json.scenariosFailed > 0 || json.featuresFailed > 0 ? "FAILED 🔴" : "PASSED 🟢";
 
-          core.setOutput('scenariosFailed', json.scenariosfailed);
+          // Log outputs for debug
+          console.log(`Scenarios Passed: ${json.scenariosPassed}`);
+          console.log(`Scenarios Failed: ${json.scenariosFailed}`);
+          console.log(`Features Passed: ${json.featuresPassed}`);
+          console.log(`Features Failed: ${json.featuresFailed}`);
+          console.log(`Test Status: ${testStatus}`);
+
+          core.setOutput('scenariosFailed', json.scenariosFailed);
           core.setOutput('scenariosPassed', json.scenariosPassed);
           core.setOutput('featuresFailed', json.featuresFailed);
           core.setOutput('featuresPassed', json.featuresPassed);
