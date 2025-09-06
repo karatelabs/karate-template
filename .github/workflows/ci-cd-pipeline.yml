@@ -13,6 +13,7 @@ permissions:
 jobs:
   setup_environment:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -52,10 +53,21 @@ jobs:
         KARATE_OPTION="${{ steps.changed-feature-files.outputs.all_changed_files }} --tags ~@ignore"
         mvn test -DargLine="-Xmx3g" -fae -Dmaven.test.failure.ignore=true -Dkarate.options="${KARATE_OPTION}"
 
+    - name: Set Local Report URL
+      if: ${{ env.SKIP_TESTS == 'false' }}
+      run: |
+        REPORT_URL="file://${{ github.workspace }}/target/karate-reports/karate-summary.html"
+        echo "REPORT_URL=$REPORT_URL" >> $GITHUB_ENV
+
     - name: Output Report URL
       if: ${{ env.SKIP_TESTS == 'false' }}
       run: |
         echo "Report URL: $REPORT_URL"
         echo "## 📝 [View Karate Summary Report]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
 
-    
+    - name: Upload Karate Report (optional)
+      if: ${{ env.SKIP_TESTS == 'false' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: karate-summary
+        path: target/karate-reports/karate-summary.html
