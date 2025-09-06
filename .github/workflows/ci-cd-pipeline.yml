@@ -9,3 +9,12 @@ permissions:
   id-token: write
   contents: read
   pull-requests: write
+
+jobs:
+  pr_checks:
+    runs-on: self-hosted
+    environment: staging
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
