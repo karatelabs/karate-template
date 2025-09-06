@@ -11,10 +11,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  pr_checks:
-    runs-on: self-hosted
-    environment: staging
-
+  setup_environment:
+    runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v3
