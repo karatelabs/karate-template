@@ -53,6 +53,27 @@ jobs:
         KARATE_OPTION="${{ steps.changed-feature-files.outputs.all_changed_files }} --tags ~@ignore"
         mvn test -DargLine="-Xmx3g" -fae -Dmaven.test.failure.ignore=true -Dkarate.options="${KARATE_OPTION}"
 
+    - name: Read Karate JSON Result
+      id: read-json
+      if: ${{ env.SKIP_TESTS == 'false' }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const core = require('@actions/core');
+
+          const jsonString = fs.readFileSync('target/karate-reports/karate-summary-json.txt', 'utf8');
+          const json = JSON.parse(jsonString);
+
+          const testStatus = json.scenariosFailed > 0 || json.featuresFailed > 0 ? "FAILED 🔴" : "PASSED 🟢";
+
+          core.setOutput('scenariosFailed', json.scenariosfailed);
+          core.setOutput('scenariosPassed', json.scenariosPassed);
+          core.setOutput('featuresFailed', json.featuresFailed);
+          core.setOutput('featuresPassed', json.featuresPassed);
+          core.setOutput('testStatus', testStatus);
+
+
     - name: Set Local Report URL
       if: ${{ env.SKIP_TESTS == 'false' }}
       run: |
