@@ -1,4 +1,4 @@
-Feature: Login API Testing
+Feature: Login API Testing New
 
   Background:
     * url baseUrl
