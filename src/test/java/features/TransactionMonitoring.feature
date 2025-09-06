@@ -18,7 +18,7 @@ Feature: Fraud Detection using Kafka and DocumentDB
 
     # Fetch data from DocumentDB
     * def fraudData = dbUtils.getCollection('fraudCollection').find().first()
-    * printMessage('Fraud data: ' + JSON.stringify(fraudData))
+    
 
     # Define the function to validate messages
     * def isValidMessage =
