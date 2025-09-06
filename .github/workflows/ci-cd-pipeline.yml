@@ -65,9 +65,9 @@ jobs:
         echo "Report URL: $REPORT_URL"
         echo "## 📝 [View Karate Summary Report]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
 
-    - name: Upload Karate Report (optional)
-      if: ${{ env.SKIP_TESTS == 'false' }}
-      uses: actions/upload-artifact@v4
+    - name: Hide previous comments
+      uses: int128/hide-comment-action@v1
       with:
+        contains: "🥋 Karate Test Report"
         name: karate-summary
         path: target/karate-reports/karate-summary.html
