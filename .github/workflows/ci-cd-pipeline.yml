@@ -98,3 +98,22 @@ jobs:
         contains: "🥋 Karate Test Report"
         name: karate-summary
         path: target/karate-reports/karate-summary.html
+
+    - name: Comment on Pull Request
+      if: ${{ env.SKIP_TESTS == 'false' }}
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        message: |
+          ### 🥋 Karate Test Report
+          - **Status**: ${{ steps.read-json.outputs.testStatus }}
+          - **Scenarios**: ${{ steps.read-json.outputs.scenariosPassed }} Passed | ${{ steps.read-json.outputs.scenariosFailed }} Failed
+          - **Features**: ${{ steps.read-json.outputs.featuresPassed }} Passed | ${{ steps.read-json.outputs.featuresFailed }} Failed
+          - 📝 **[View Karate Summary Report](${{ env.REPORT_URL }})**
+        GITHUB_TOKEN: ${{ env.KARATE_CICD_RW }}
+
+    - name: Fail if Tests Failed
+      if: ${{ env.SKIP_TESTS == 'false' && steps.read-json.outputs.testStatus == 'FAILED 🔴' }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          core.setFailed('Test execution completed with some failures. Exiting with status code 1.')
